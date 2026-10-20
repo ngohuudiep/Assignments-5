@@ -1,0 +1,13 @@
+{
+  "typescript.validate.enable": true,
+  "javascript.validate.enable": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  }
+}

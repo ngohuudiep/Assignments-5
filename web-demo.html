@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Management App - Mobile Simulator & Live Demo</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-dark: #3730A3;
+      --primary-light: #EEF2FF;
+      --secondary: #06B6D4;
+      --accent: #F59E0B;
+      --danger: #EF4444;
+      --danger-light: #FEF2F2;
+      --success: #10B981;
+      --bg-page: #0f172a;
+      --bg-app: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-sub: #64748B;
+      --border: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    /* Top Control Bar */
+    .top-bar {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      padding: 16px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .top-title h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-title p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .api-config-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 280px;
+      justify-content: flex-end;
+    }
+
+    .api-input {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .api-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .api-btn:hover { background: var(--primary-dark); }
+
+    /* Phone Device Mockup Container */
+    .device-container {
+      position: relative;
+      width: 100%;
+      max-width: 412px;
+      height: 840px;
+      background: #000;
+      border-radius: 46px;
+      padding: 12px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Dynamic Island / Notch */
+    .device-notch {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 10px;
+    }
+    .notch-camera {
+      width: 11px;
+      height: 11px;
+      background: #111827;
+      border-radius: 50%;
+      border: 1px solid #1e293b;
+    }
+
+    /* Screen Frame */
+    .app-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-app);
+      border-radius: 36px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      height: 44px;
+      padding: 12px 24px 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0f172a;
+      z-index: 10;
+      background: transparent;
+    }
+
+    /* Views / Screens */
+    .view-content {
+      flex: 1;
+      overflow-y: auto;
+      display: none;
+      flex-direction: column;
+      position: relative;
+    }
+    .view-content.active {
+      display: flex;
+    }
+
+    /* Custom Header */
+    .app-header {
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-app);
+    }
+    .header-sub {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .header-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .cat-btn-nav {
+      background: var(--primary-light);
+      border: 1px solid #C7D2FE;
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    /* Search Bar */
+    .search-box {
+      padding: 0 20px 10px;
+    }
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      gap: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .search-input-wrap input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    /* Category Filter Pills */
+    .cat-filter-scroll {
+      display: flex;
+      gap: 8px;
+      padding: 4px 20px 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .cat-filter-scroll::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      white-space: nowrap;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cat-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* Course List Cards */
+    .courses-list {
+      padding: 0 20px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .course-card {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .course-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    .card-thumb-wrap {
+      position: relative;
+      width: 100%;
+      height: 160px;
+      background: #cbd5e1;
+    }
+    .card-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-cat-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .card-play-btn {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .card-body {
+      padding: 14px;
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    .card-instructor {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+    .card-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 10px;
+    }
+    .card-duration {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .card-price {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* Floating Add Button */
+    .fab-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 20px;
+      width: 54px;
+      height: 54px;
+      border-radius: 27px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+      cursor: pointer;
+      z-index: 20;
+      transition: transform 0.2s;
+    }
+    .fab-btn:hover { transform: scale(1.08); }
+
+    /* DETAIL SCREEN STYLES */
+    .detail-hero-wrap {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      background: #0f172a;
+    }
+    .detail-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .detail-back-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #0f172a;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 5;
+    }
+    .detail-body {
+      padding: 18px;
+      padding-bottom: 90px;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .detail-grid-item {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    .detail-grid-item span {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+    .detail-grid-item strong {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .detail-price-box {
+      background: var(--primary-light);
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .trailer-action-banner {
+      background: #0f172a;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      color: white;
+    }
+    .trailer-action-banner .icon-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 19px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .detail-bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 12px 18px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .btn-edit {
+      flex: 1;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn-del {
+      flex: 1;
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* FORM STYLES */
+    .form-content {
+      padding: 16px 20px 80px;
+    }
+    .form-group {
+      margin-bottom: 14px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    .form-control {
+      width: 100%;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+    }
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+    .preview-box {
+      margin-top: 8px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+    }
+    .preview-box img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .btn-save-form {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* CATEGORY MANAGEMENT VIEW */
+    .cat-manage-list {
+      padding: 16px 20px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .cat-item-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cat-badge-count {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      margin-left: 6px;
+    }
+
+    /* TRAILER PLAYER VIEW */
+    .video-view-wrap {
+      background: #000;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .video-player-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    video {
+      width: 100%;
+      max-height: 400px;
+    }
+
+    /* Modal / Alert overlay */
+    .alert-banner {
+      position: absolute;
+      top: 50px;
+      left: 20px;
+      right: 20px;
+      background: #1e293b;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      font-size: 0.85rem;
+      z-index: 100;
+      display: none;
+      border-left: 4px solid var(--primary);
+    }
+    .alert-banner.error { border-left-color: var(--danger); }
+    .alert-banner.success { border-left-color: var(--success); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Configuration & Demo Instructions -->
+  <div class="top-bar">
+    <div class="top-title">
+      <h1><i data-lucide="smartphone"></i> Course Management (Reactive & Repo)</h1>
+      <p>Mô phỏng Mobile App hoàn chỉnh: Repository Pattern & Reactive State Management</p>
+    </div>
+    <div class="api-config-box">
+      <input type="text" id="mockApiUrlInput" class="api-input" value="https://6ad59cb148476c0785d98e46.mockapi.io/api/v1" placeholder="Nhập Base URL MockAPI...">
+      <button class="api-btn" onclick="updateApiUrl()"><i data-lucide="refresh-cw"></i> Kết nối API</button>
+    </div>
+  </div>
+
+  <!-- Mobile Device Simulation Frame -->
+  <div class="device-container">
+    <div class="device-notch">
+      <div class="notch-camera"></div>
+    </div>
+
+    <div class="app-screen">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span>09:41</span>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <i data-lucide="wifi" style="width:14px; height:14px;"></i>
+          <i data-lucide="battery" style="width:16px; height:16px;"></i>
+        </div>
+      </div>
+
+      <!-- Toast / Alert Banner -->
+      <div id="appAlert" class="alert-banner">
+        <span id="alertText">Thông báo</span>
+      </div>
+
+      <!-- SCREEN 1: COURSE LIST -->
+      <div id="view-courses" class="view-content active">
+        <div class="app-header">
+          <div>
+            <div class="header-sub">HỆ THỐNG ĐÀO TẠO</div>
+            <div class="header-title">Khóa Học</div>
+          </div>
+          <button class="cat-btn-nav" onclick="showScreen('view-categories')">
+            <i data-lucide="folder" style="width:14px; height:14px;"></i> Danh mục
+          </button>
+        </div>
+
+        <div class="search-box">
+          <div class="search-input-wrap">
+            <i data-lucide="search" style="width:16px; height:16px; color:#94a3b8;"></i>
+            <input type="text" id="searchInput" placeholder="Tìm kiếm khóa học theo tên..." oninput="handleSearch(this.value)">
+          </div>
+        </div>
+
+        <div class="cat-filter-scroll" id="categoryPills">
+          <!-- Dynamically populated from API -->
+        </div>
+
+        <div class="courses-list" id="coursesList">
+          <!-- Course cards -->
+        </div>
+
+        <button class="fab-btn" onclick="openAddCourseScreen()">
+          <i data-lucide="plus" style="width:24px; height:24px;"></i>
+        </button>
+      </div>
+
+      <!-- SCREEN 2: COURSE DETAIL -->
+      <div id="view-detail" class="view-content">
+        <div class="detail-hero-wrap">
+          <button class="detail-back-btn" onclick="showScreen('view-courses')">
+            <i data-lucide="arrow-left" style="width:20px; height:20px;"></i>
+          </button>
+          <img id="detailHeroImg" class="detail-hero-img" src="" alt="Thumbnail">
+        </div>
+
+        <div class="detail-body">
+          <div id="detailCatBadge" class="card-cat-badge" style="position:static; display:inline-block; margin-bottom:8px;">Danh mục</div>
+          <h2 id="detailTitle" style="font-size:1.25rem; font-weight:800; color:var(--text-main); margin-bottom:10px;">Tên khóa học</h2>
+
+          <div class="detail-grid">
+            <div class="detail-grid-item">
+              <i data-lucide="user" style="width:16px; height:16px; color:var(--primary);"></i>
+              <span>Giảng viên</span>
+              <strong id="detailInstructor">---</strong>
+            </div>
+            <div class="detail-grid-item">
+              <i data-lucide="clock" style="width:16px; height:16px; color:var(--secondary);"></i>
+              <span>Thời lượng</span>
+              <strong id="detailDuration">-- giờ</strong>
+            </div>
+            <div class="detail-grid-item">
+              <i data-lucide="calendar" style="width:16px; height:16px; color:var(--accent);"></i>
+              <span>Ngày tạo</span>
+              <strong id="detailCreatedAt">--/--</strong>
+            </div>
+          </div>
+
+          <div class="detail-price-box">
+            <span style="font-size:0.85rem; font-weight:600; color:var(--primary-dark);">Học phí:</span>
+            <strong id="detailPrice" style="font-size:1.15rem; font-weight:800; color:var(--primary);">0 đ</strong>
+          </div>
+
+          <div class="trailer-action-banner" onclick="playCurrentTrailer()">
+            <div class="icon-circle"><i data-lucide="play" style="width:18px; height:18px;"></i></div>
+            <div>
+              <div style="font-size:0.9rem; font-weight:700;">Xem Video Trailer</div>
+              <div style="font-size:0.75rem; color:#94a3b8;">Phát video trailer trong ứng dụng</div>
+            </div>
+          </div>
+
+          <div style="background:white; border-radius:12px; border:1px solid var(--border); padding:14px; margin-bottom:14px;">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--text-main); margin-bottom:6px;">Mô tả chi tiết</div>
+            <p id="detailDescription" style="font-size:0.8rem; color:var(--text-sub); line-height:1.5;">...</p>
+          </div>
+        </div>
+
+        <div class="detail-bottom-bar">
+          <button class="btn-edit" onclick="openEditCurrentCourse()">
+            <i data-lucide="edit-3" style="width:16px; height:16px;"></i> Sửa khóa học
+          </button>
+          <button class="btn-del" onclick="deleteCurrentCourse()">
+            <i data-lucide="trash-2" style="width:16px; height:16px;"></i> Xóa khóa học
+          </button>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: COURSE FORM (ADD / EDIT) -->
+      <div id="view-form" class="view-content">
+        <div class="app-header" style="background:white; border-bottom:1px solid var(--border);">
+          <button class="detail-back-btn" style="position:static;" onclick="showScreen('view-courses')">
+            <i data-lucide="arrow-left" style="width:20px; height:20px;"></i>
+          </button>
+          <div id="formHeaderTitle" style="font-size:1rem; font-weight:800;">Thêm Khóa Học Mới</div>
+          <div style="width:36px;"></div>
+        </div>
+
+        <div class="form-content">
+          <div class="form-group">
+            <label>Tên khóa học *</label>
+            <input type="text" id="formTitle" class="form-control" placeholder="Nhập tên khóa học...">
+          </div>
+
+          <div class="form-group">
+            <label>Danh mục *</label>
+            <select id="formCategoryId" class="form-control">
+              <!-- Dynamically populated from API categories -->
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" style="flex:1;">
+              <label>Giảng viên *</label>
+              <input type="text" id="formInstructor" class="form-control" placeholder="Tên giảng viên">
+            </div>
+            <div class="form-group" style="flex:1;">
+              <label>Thời lượng (giờ) *</label>
+              <input type="number" id="formDuration" class="form-control" placeholder="30">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Học phí (VNĐ) *</label>
+            <input type="number" id="formPrice" class="form-control" placeholder="500000">
+          </div>
+
+          <div class="form-group">
+            <label>URL Ảnh bìa *</label>
+            <input type="text" id="formThumbnail" class="form-control" placeholder="https://..." oninput="updateFormPreview(this.value)">
+            <div class="preview-box">
+              <span style="font-size:0.75rem; color:var(--text-sub); display:block; margin-bottom:4px;">Xem trước ảnh:</span>
+              <img id="formPreviewImg" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800" alt="Preview">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>URL Video Trailer (MP4)</label>
+            <input type="text" id="formTrailerUrl" class="form-control" placeholder="https://.../video.mp4">
+          </div>
+
+          <div class="form-group">
+            <label>Mô tả khóa học</label>
+            <textarea id="formDescription" class="form-control" rows="3" placeholder="Chi tiết khóa học..."></textarea>
+          </div>
+
+          <button class="btn-save-form" onclick="saveCourseForm()">Lưu Khóa Học</button>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: CATEGORY MANAGEMENT -->
+      <div id="view-categories" class="view-content">
+        <div class="app-header" style="background:white; border-bottom:1px solid var(--border);">
+          <button class="detail-back-btn" style="position:static;" onclick="showScreen('view-courses')">
+            <i data-lucide="arrow-left" style="width:20px; height:20px;"></i>
+          </button>
+          <div style="font-size:1rem; font-weight:800;">Quản Lý Danh Mục</div>
+          <button class="cat-btn-nav" onclick="openAddCategoryModal()">+ Mới</button>
+        </div>
+
+        <div class="cat-manage-list" id="categoryManageList">
+          <!-- Category Items with course count and delete constraints -->
+        </div>
+      </div>
+
+      <!-- SCREEN 5: TRAILER VIDEO PLAYER -->
+      <div id="view-player" class="view-content">
+        <div class="video-view-wrap">
+          <div class="app-header" style="background:#0f172a; color:white; border-bottom:1px solid #1e293b;">
+            <button class="detail-back-btn" style="position:static; background:#1e293b; color:white;" onclick="closeTrailerPlayer()">
+              <i data-lucide="x" style="width:20px; height:20px;"></i>
+            </button>
+            <div id="playerTitle" style="font-size:0.9rem; font-weight:700; color:white; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:240px;">Video Trailer</div>
+            <div style="width:36px;"></div>
+          </div>
+
+          <div class="video-player-container">
+            <video id="mainVideoPlayer" controls autoplay>
+              <source id="videoSource" src="" type="video/mp4">
+              Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Local / Fallback Initial Data -->
+  <script>
+    let API_BASE_URL = 'https://6ad59cb148476c0785d98e46.mockapi.io/api/v1';
+
+    let localCategories = [
+      { id: "1", name: "Lập trình Mobile", description: "Android, Flutter, React Native, iOS" },
+      { id: "2", name: "Lập trình Web", description: "Frontend, Backend, Fullstack NodeJS, React" },
+      { id: "3", name: "Trí tuệ nhân tạo", description: "AI, Machine Learning, Deep Learning" },
+      { id: "4", name: "Thiết kế UI/UX", description: "Figma, Adobe XD, Design Systems" }
+    ];
+
+    let localCourses = [
+      {
+        id: "1",
+        title: "Lập trình Android với Kotlin từ số 0",
+        description: "Khóa học thực chiến xây dựng ứng dụng Android hiện đại với Kotlin và Jetpack Compose.",
+        categoryId: "1",
+        instructor: "Nguyễn Văn An",
+        price: 550000,
+        duration: 36,
+        thumbnail: "https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        createdAt: "2026-10-10"
+      },
+      {
+        id: "2",
+        title: "Lập trình Flutter & Dart đa nền tảng",
+        description: "Làm chủ Flutter để phát triển ứng dụng di động cho cả iOS và Android chỉ với 1 codebase duy nhất.",
+        categoryId: "1",
+        instructor: "Trần Thị Bích",
+        price: 650000,
+        duration: 42,
+        thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        createdAt: "2026-10-11"
+      },
+      {
+        id: "3",
+        title: "React Native & Expo toàn tập",
+        description: "Tạo ứng dụng mobile nhanh chóng bằng React và JavaScript. Tích hợp camera, push notification, REST API.",
+        categoryId: "1",
+        instructor: "Lê Hoàng Long",
+        price: 490000,
+        duration: 30,
+        thumbnail: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+        createdAt: "2026-10-12"
+      },
+      {
+        id: "4",
+        title: "Xây dựng Web Fullstack với React & Node.js",
+        description: "Khóa học đi từ HTML, CSS, JavaScript hiện đại tới React 18, ExpressJS, MongoDB và triển khai Cloud.",
+        categoryId: "2",
+        instructor: "Phạm Quốc Dũng",
+        price: 790000,
+        duration: 50,
+        thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+        createdAt: "2026-10-13"
+      },
+      {
+        id: "5",
+        title: "Chuyên sâu Next.js 14 & Server Actions",
+        description: "Học kiến trúc App Router, Server Components, SEO tối ưu và tích hợp TailwindCSS làm web thương mại điện tử.",
+        categoryId: "2",
+        instructor: "Đỗ Thu Trang",
+        price: 720000,
+        duration: 38,
+        thumbnail: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+        createdAt: "2026-10-14"
+      },
+      {
+        id: "6",
+        title: "Backend API với Spring Boot & Microservices",
+        description: "Thiết kế hệ thống Backend chịu tải cao với Java Spring Boot, Spring Security, JWT và Docker.",
+        categoryId: "2",
+        instructor: "Vũ Hải Nam",
+        price: 850000,
+        duration: 48,
+        thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4",
+        createdAt: "2026-10-15"
+      },
+      {
+        id: "7",
+        title: "Machine Learning căn bản tới nâng cao với Python",
+        description: "Khám phá các thuật toán học máy, Scikit-Learn, Pandas, hồi quy, phân loại và trực quan hóa dữ liệu.",
+        categoryId: "3",
+        instructor: "TS. Mai Văn Cường",
+        price: 920000,
+        duration: 45,
+        thumbnail: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4",
+        createdAt: "2026-10-16"
+      },
+      {
+        id: "8",
+        title: "Deep Learning & Thị giác máy tính",
+        description: "Xử lý ảnh số, nhận diện khuôn mặt, phát hiện vật thể với PyTorch, OpenCV và CNN/YOLO.",
+        categoryId: "3",
+        instructor: "Ngô Hoàng Yến",
+        price: 990000,
+        duration: 52,
+        thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        createdAt: "2026-10-16"
+      },
+      {
+        id: "9",
+        title: "Xử lý ngôn ngữ tự nhiên (NLP) & GenAI",
+        description: "Thực hành Fine-tuning mô hình ngôn ngữ lớn, xây dựng ứng dụng Chatbot AI với RAG và LangChain.",
+        categoryId: "3",
+        instructor: "Đặng Minh Tâm",
+        price: 1150000,
+        duration: 40,
+        thumbnail: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackSeeTheWorld.mp4",
+        createdAt: "2026-10-17"
+      },
+      {
+        id: "10",
+        title: "Thiết kế UI/UX Mobile App chuyên nghiệp trên Figma",
+        description: "Nắm vững nguyên lý thiết kế trải nghiệm người dùng, Wireframe, Design Token và Prototype.",
+        categoryId: "4",
+        instructor: "Bùi Quỳnh Chi",
+        price: 450000,
+        duration: 28,
+        thumbnail: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&auto=format&fit=crop&q=80",
+        trailerUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+        createdAt: "2026-10-18"
+      }
+    ];
+
+    let currentEditingCourseId = null;
+    let selectedCategoryFilter = null;
+    let currentSearchTerm = '';
+    let currentDetailCourse = null;
+
+    // Toast alert helper
+    function showAlert(msg, type = 'info') {
+      const banner = document.getElementById('appAlert');
+      const text = document.getElementById('alertText');
+      text.innerText = msg;
+      banner.className = `alert-banner ${type}`;
+      banner.style.display = 'block';
+      setTimeout(() => {
+        banner.style.display = 'none';
+      }, 3500);
+    }
+
+    function formatVND(amount) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(amount) || 0);
+    }
+
+    // Switch active screen view
+    function showScreen(screenId) {
+      document.querySelectorAll('.view-content').forEach(el => el.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+      lucide.createIcons();
+    }
+
+    // Fetch API with fallback
+    async function loadAllData() {
+      try {
+        const [catRes, courseRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/categories`),
+          fetch(`${API_BASE_URL}/courses`)
+        ]);
+        if (catRes.ok && courseRes.ok) {
+          localCategories = await catRes.json();
+          localCourses = await courseRes.json();
+          showAlert('Đã đồng bộ dữ liệu từ MockAPI!', 'success');
+        } else {
+          showAlert('MockAPI chưa có dữ liệu hoặc URL chưa đúng, dùng dữ liệu mẫu cục bộ.');
+        }
+      } catch (err) {
+        console.warn('Dùng dữ liệu dự phòng:', err.message);
+      }
+      renderCategories();
+      renderCourses();
+    }
+
+    function updateApiUrl() {
+      const val = document.getElementById('mockApiUrlInput').value.trim();
+      if (val) {
+        API_BASE_URL = val.replace(/\/+$/, '');
+        loadAllData();
+      }
+    }
+
+    function getCategoryName(catId) {
+      const found = localCategories.find(c => String(c.id) === String(catId));
+      return found ? found.name : 'Chưa phân loại';
+    }
+
+    // Render category filter pills & dropdowns
+    function renderCategories() {
+      const pillsContainer = document.getElementById('categoryPills');
+      let pillsHtml = `
+        <div class="cat-pill ${selectedCategoryFilter === null ? 'active' : ''}" onclick="filterByCategory(null)">
+          Tất cả
+        </div>
+      `;
+
+      const formSelect = document.getElementById('formCategoryId');
+      let selectHtml = '';
+
+      localCategories.forEach(cat => {
+        const isActive = String(selectedCategoryFilter) === String(cat.id);
+        pillsHtml += `
+          <div class="cat-pill ${isActive ? 'active' : ''}" onclick="filterByCategory('${cat.id}')">
+            ${cat.name}
+          </div>
+        `;
+        selectHtml += `<option value="${cat.id}">${cat.name}</option>`;
+      });
+
+      pillsContainer.innerHTML = pillsHtml;
+      formSelect.innerHTML = selectHtml;
+
+      renderCategoryManagementList();
+    }
+
+    function filterByCategory(id) {
+      selectedCategoryFilter = id;
+      renderCategories();
+      renderCourses();
+    }
+
+    function handleSearch(term) {
+      currentSearchTerm = term.toLowerCase().trim();
+      renderCourses();
+    }
+
+    // Render course cards
+    function renderCourses() {
+      const container = document.getElementById('coursesList');
+      const filtered = localCourses.filter(course => {
+        const matchSearch = course.title ? course.title.toLowerCase().includes(currentSearchTerm) : false;
+        const matchCat = selectedCategoryFilter === null || String(course.categoryId) === String(selectedCategoryFilter);
+        return matchSearch && matchCat;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:50px 20px; color:#64748b;">
+            <i data-lucide="search-x" style="width:48px; height:48px; margin-bottom:10px; color:#94a3b8;"></i>
+            <h3 style="color:#0f172a; margin-bottom:4px;">Không tìm thấy khóa học</h3>
+            <p style="font-size:0.85rem;">Không có kết quả nào khớp với tìm kiếm.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map(course => `
+        <div class="course-card" onclick="openCourseDetail('${course.id}')">
+          <div class="card-thumb-wrap">
+            <img class="card-thumb" src="${course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800'}" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800'" alt="${course.title}">
+            <div class="card-cat-badge">${getCategoryName(course.categoryId)}</div>
+            ${course.trailerUrl ? `
+              <div class="card-play-btn" onclick="event.stopPropagation(); playTrailerDirect('${course.title.replace(/'/g, "\\'")}', '${course.trailerUrl}')">
+                <i data-lucide="play" style="width:16px; height:16px;"></i>
+              </div>
+            ` : ''}
+          </div>
+          <div class="card-body">
+            <div class="card-title">${course.title}</div>
+            <div class="card-instructor">
+              <i data-lucide="user" style="width:14px; height:14px;"></i>
+              ${course.instructor || 'Chưa cập nhật'}
+            </div>
+            <div class="card-foot">
+              <div class="card-duration">
+                <i data-lucide="clock" style="width:14px; height:14px;"></i>
+                ${course.duration || 0} giờ
+              </div>
+              <div class="card-price">${formatVND(course.price)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // Detail Screen
+    function openCourseDetail(id) {
+      const course = localCourses.find(c => String(c.id) === String(id));
+      if (!course) return;
+      currentDetailCourse = course;
+
+      document.getElementById('detailHeroImg').src = course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800';
+      document.getElementById('detailCatBadge').innerText = getCategoryName(course.categoryId);
+      document.getElementById('detailTitle').innerText = course.title;
+      document.getElementById('detailInstructor').innerText = course.instructor || '---';
+      document.getElementById('detailDuration').innerText = `${course.duration || 0} giờ`;
+      document.getElementById('detailCreatedAt').innerText = course.createdAt || 'Mới';
+      document.getElementById('detailPrice').innerText = formatVND(course.price);
+      document.getElementById('detailDescription').innerText = course.description || 'Chưa có mô tả chi tiết.';
+
+      showScreen('view-detail');
+    }
+
+    function playCurrentTrailer() {
+      if (currentDetailCourse && currentDetailCourse.trailerUrl) {
+        playTrailerDirect(currentDetailCourse.title, currentDetailCourse.trailerUrl);
+      } else {
+        showAlert('Khóa học này chưa có link video trailer!', 'error');
+      }
+    }
+
+    function playTrailerDirect(title, url) {
+      document.getElementById('playerTitle').innerText = title;
+      const video = document.getElementById('mainVideoPlayer');
+      const source = document.getElementById('videoSource');
+      source.src = url;
+      video.load();
+      video.play().catch(e => console.log('Autoplay blocked'));
+      showScreen('view-player');
+    }
+
+    function closeTrailerPlayer() {
+      const video = document.getElementById('mainVideoPlayer');
+      video.pause();
+      showScreen('view-courses');
+    }
+
+    // Delete Course
+    async function deleteCurrentCourse() {
+      if (!currentDetailCourse) return;
+      const deletedTitle = currentDetailCourse.title;
+
+      try {
+        await fetch(`${API_BASE_URL}/courses/${currentDetailCourse.id}`, { method: 'DELETE' });
+      } catch (e) {
+        console.warn('API error, xóa local');
+      }
+
+      localCourses = localCourses.filter(c => String(c.id) !== String(currentDetailCourse.id));
+      showAlert(`Đã xóa khóa học "${deletedTitle}" thành công!`, 'success');
+      renderCourses();
+      showScreen('view-courses');
+    }
+
+    // Add / Edit Form
+    function openAddCourseScreen() {
+      currentEditingCourseId = null;
+      document.getElementById('formHeaderTitle').innerText = 'Thêm Khóa Học Mới';
+      document.getElementById('formTitle').value = '';
+      document.getElementById('formInstructor').value = '';
+      document.getElementById('formDuration').value = '30';
+      document.getElementById('formPrice').value = '500000';
+      document.getElementById('formThumbnail').value = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800';
+      document.getElementById('formTrailerUrl').value = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+      document.getElementById('formDescription').value = '';
+      updateFormPreview(document.getElementById('formThumbnail').value);
+      showScreen('view-form');
+    }
+
+    function openEditCurrentCourse() {
+      if (!currentDetailCourse) return;
+      currentEditingCourseId = currentDetailCourse.id;
+      document.getElementById('formHeaderTitle').innerText = 'Chỉnh Sửa Khóa Học';
+      document.getElementById('formTitle').value = currentDetailCourse.title || '';
+      document.getElementById('formCategoryId').value = currentDetailCourse.categoryId;
+      document.getElementById('formInstructor').value = currentDetailCourse.instructor || '';
+      document.getElementById('formDuration').value = currentDetailCourse.duration || '';
+      document.getElementById('formPrice').value = currentDetailCourse.price || '';
+      document.getElementById('formThumbnail').value = currentDetailCourse.thumbnail || '';
+      document.getElementById('formTrailerUrl').value = currentDetailCourse.trailerUrl || '';
+      document.getElementById('formDescription').value = currentDetailCourse.description || '';
+      updateFormPreview(currentDetailCourse.thumbnail);
+      showScreen('view-form');
+    }
+
+    function updateFormPreview(url) {
+      document.getElementById('formPreviewImg').src = url || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800';
+    }
+
+    async function saveCourseForm() {
+      const title = document.getElementById('formTitle').value.trim();
+      const categoryId = document.getElementById('formCategoryId').value;
+      const instructor = document.getElementById('formInstructor').value.trim();
+      const price = Number(document.getElementById('formPrice').value);
+      const duration = Number(document.getElementById('formDuration').value);
+      const thumbnail = document.getElementById('formThumbnail').value.trim();
+      const trailerUrl = document.getElementById('formTrailerUrl').value.trim();
+      const description = document.getElementById('formDescription').value.trim();
+
+      if (!title) return alert('Vui lòng nhập tên khóa học!');
+      if (!instructor) return alert('Vui lòng nhập giảng viên!');
+      if (isNaN(price) || price < 0) return alert('Học phí phải là số không âm (>= 0)!');
+      if (isNaN(duration) || duration <= 0) return alert('Thời lượng phải là số dương (> 0)!');
+
+      const payload = {
+        title,
+        categoryId: String(categoryId),
+        instructor,
+        price,
+        duration,
+        thumbnail,
+        trailerUrl,
+        description
+      };
+
+      if (currentEditingCourseId) {
+        // UPDATE
+        try {
+          await fetch(`${API_BASE_URL}/courses/${currentEditingCourseId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (e) { console.warn('API error'); }
+
+        localCourses = localCourses.map(c => String(c.id) === String(currentEditingCourseId) ? { ...c, ...payload } : c);
+        showAlert('Cập nhật khóa học thành công!', 'success');
+      } else {
+        // CREATE
+        payload.createdAt = new Date().toISOString().split('T')[0];
+        try {
+          const res = await fetch(`${API_BASE_URL}/courses`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            payload.id = data.id;
+          } else {
+            payload.id = String(Date.now());
+          }
+        } catch (e) {
+          payload.id = String(Date.now());
+        }
+        localCourses.unshift(payload);
+        showAlert('Thêm khóa học mới thành công!', 'success');
+      }
+
+      renderCourses();
+      showScreen('view-courses');
+    }
+
+    // CATEGORY MANAGEMENT LOGIC (With Constraint check!)
+    function renderCategoryManagementList() {
+      const container = document.getElementById('categoryManageList');
+      container.innerHTML = localCategories.map(cat => {
+        const count = localCourses.filter(c => String(c.categoryId) === String(cat.id)).length;
+        return `
+          <div class="cat-item-card">
+            <div>
+              <div style="font-weight:700; color:var(--text-main); font-size:0.9rem;">
+                ${cat.name}
+                <span class="cat-badge-count">${count} khóa học</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-sub); margin-top:2px;">${cat.description || 'Không có mô tả'}</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button style="border:none; background:#eef2ff; color:var(--primary); padding:6px; border-radius:6px; cursor:pointer;" onclick="editCategoryPrompt('${cat.id}')">
+                <i data-lucide="edit-2" style="width:14px; height:14px;"></i>
+              </button>
+              <button style="border:none; background:#fef2f2; color:var(--danger); padding:6px; border-radius:6px; cursor:pointer;" onclick="deleteCategoryCheck('${cat.id}')">
+                <i data-lucide="trash" style="width:14px; height:14px;"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function openAddCategoryModal() {
+      const name = prompt('Nhập tên danh mục mới:');
+      if (!name || !name.trim()) return;
+      const desc = prompt('Nhập mô tả danh mục (tùy chọn):') || '';
+
+      const newCat = {
+        id: String(Date.now()),
+        name: name.trim(),
+        description: desc.trim()
+      };
+
+      fetch(`${API_BASE_URL}/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCat)
+      }).catch(e => console.warn(e));
+
+      localCategories.push(newCat);
+      showAlert(`Đã tạo danh mục "${newCat.name}"!`, 'success');
+      renderCategories();
+    }
+
+    function editCategoryPrompt(id) {
+      const cat = localCategories.find(c => String(c.id) === String(id));
+      if (!cat) return;
+      const name = prompt('Sửa tên danh mục:', cat.name);
+      if (!name || !name.trim()) return;
+      const desc = prompt('Sửa mô tả danh mục:', cat.description || '') || '';
+
+      cat.name = name.trim();
+      cat.description = desc.trim();
+
+      fetch(`${API_BASE_URL}/categories/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cat)
+      }).catch(e => console.warn(e));
+
+      showAlert('Đã cập nhật danh mục!', 'success');
+      renderCategories();
+    }
+
+    // RÀNG BUỘC THEO ĐỀ BÀI: KHÔNG CHO PHÉP XÓA DANH MỤC ĐANG CÓ KHÓA HỌC
+    function deleteCategoryCheck(id) {
+      const cat = localCategories.find(c => String(c.id) === String(id));
+      if (!cat) return;
+      const count = localCourses.filter(c => String(c.categoryId) === String(id)).length;
+
+      if (count > 0) {
+        showAlert(`[Ràng buộc] Không thể xóa danh mục "${cat.name}" vì đang có ${count} khóa học!`, 'error');
+        return;
+      }
+
+      fetch(`${API_BASE_URL}/categories/${id}`, { method: 'DELETE' }).catch(e => console.warn(e));
+      localCategories = localCategories.filter(c => String(c.id) !== String(id));
+      showAlert(`Đã xóa danh mục "${cat.name}" thành công!`, 'success');
+      renderCategories();
+    }
+
+    // Khởi chạy ngay lập tức dữ liệu để không bao giờ bị trắng màn hình
+    renderCategories();
+    renderCourses();
+
+    function init() {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+      loadAllData();
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
