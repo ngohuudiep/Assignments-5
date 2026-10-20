@@ -3,6 +3,7 @@
 > **Môn học**: Lập trình Mobile App  
 > **Backend**: MockAPI.io (REST API)  
 > **Kiến trúc**: Repository Pattern (Data Abstraction Layer) + Reactive State (Auto-sync Store)  
+> 📱 **Link Video Demo Ứng Dụng**: [Xem Video Demo Ứng Dụng tại đây (Google Drive)](https://drive.google.com/drive/folders/1SFw1H0RWHddSQwBlSv3uNzV1WlyDaHcR?usp=sharing)  
 > 🎥 **Link Video Thuyết Minh Đồ Án**: [Xem Video Thuyết Minh tại đây (Google Drive)](https://drive.google.com/drive/folders/1bu8cnYV_3Z2_vJOmvvcFa5fkF-xXfsZ0?usp=sharing)  
 > 🌐 **MockAPI Endpoint**: `https://6ad59cb148476c0785d98e46.mockapi.io/api/v1`
 
@@ -194,4 +195,5 @@ Copy Base URL từ project MockAPI của bạn (dạng: `https://YOUR_ID.mockapi
 
 ---
 
-> 🎬 **Link Video Thuyết Minh Thực Tế**: [Mở Video Thuyết Minh trên Google Drive](https://drive.google.com/drive/folders/1bu8cnYV_3Z2_vJOmvvcFa5fkF-xXfsZ0?usp=sharing)
+> 📱 **Link Video Demo Ứng Dụng Thực Tế**: [Mở Video Demo trên Google Drive](https://drive.google.com/drive/folders/1SFw1H0RWHddSQwBlSv3uNzV1WlyDaHcR?usp=sharing)  
+> 🎬 **Link Video Thuyết Minh Đồ Án**: [Mở Video Thuyết Minh trên Google Drive](https://drive.google.com/drive/folders/1bu8cnYV_3Z2_vJOmvvcFa5fkF-xXfsZ0?usp=sharing)
